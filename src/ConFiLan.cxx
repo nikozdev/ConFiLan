@@ -2,6 +2,7 @@
 #define dConFiLanCxx
 #include "ConFiLan.hxx"
 #include "dTermAPar.dir/fHead.hxx"
+#include "Boost/filesystem.hpp"
 #include <cstddef>
 #include <cstdlib>
 #include <algorithm>
@@ -19,6 +20,15 @@ int fMain(int vArgC, char **vArgV)
 			return 0;
 		}
 	);
+	vArgParser.fSetCmd(
+		"tFileSystem",
+		[](nTermAPar::tCmd &vCmd)
+		{
+			fmt::println("{}", boost::filesystem::current_path().c_str());
+			return 0;
+		}
+	);
+  vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToRes "/exam.cfl");
 	vArgParser.fParse(vArgC, vArgV);
 	return EXIT_SUCCESS;
 }
