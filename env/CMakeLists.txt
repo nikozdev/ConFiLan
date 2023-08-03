@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # file
 set(vFileDirLoc "${PROJECT_SOURCE_DIR}/..")
 set(vFileDirSrc "${vFileDirLoc}/src")
+set(vFileDirBin "${PROJECT_BINARY_DIR}")
 # make
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(vMakeToolGnucc "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
@@ -35,6 +36,12 @@ set(vMakeToolMsvcc "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 option(oMakeLib "make project library" TRUE)
 if(oMakeLib)
   add_library(${vProjNameLib} INTERFACE)
+  find_package(pTermAPar REQUIRED)
+  target_link_libraries(${vProjNameLib} INTERFACE pTermAPar::lTermAPar)
+  mark_as_advanced(FORCE pTermAPar_DIR)
+  find_package(fmt REQUIRED)
+  target_link_libraries(${vProjNameLib} INTERFACE fmt::fmt)
+  mark_as_advanced(FORCE fmt_DIR)
   target_compile_definitions(${vProjNameLib} INTERFACE
     ${vProjNameCon}ProjName=${vProjNameUse}
     ${vProjNameCon}ProjVnum=${vProjVnumWhole}
@@ -69,5 +76,17 @@ if(oMakeLib)
     target_compile_definitions(${vProjNameExe} PRIVATE ${vProjNameDef}MakeExe)
     target_link_libraries(${vProjNameExe} PRIVATE ${vProjNameLib})
     # test
+    include(CTest)
+    enable_testing()
+    #
+    set(vTestName "tHello")
+    add_test(NAME ${vTestName}
+      COMMAND ${vFileDirBin}/${vProjNameExe} tHello
+      ) # add_test
+    set(vPassRegex "HelloWorld")
+    set_tests_properties(tHello PROPERTIES
+      PASS_REGULAR_EXPRESSION ${vPassRegex}
+      ) # set_tests_properties
+    #
   endif(oMakeExe)
 endif(oMakeLib)

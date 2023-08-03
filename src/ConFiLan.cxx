@@ -1,6 +1,7 @@
 #ifndef dConFiLanCxx
 #define dConFiLanCxx
 #include "ConFiLan.hxx"
+#include "dTermAPar.dir/fHead.hxx"
 #include <cstddef>
 #include <cstdlib>
 #include <algorithm>
@@ -9,9 +10,16 @@ namespace nConFiLan
 {
 int fMain(int vArgC, char **vArgV)
 {
-	std::copy(
-		vArgV, vArgV + vArgC, std::ostream_iterator<const char *>(std::clog, "\n")
+	nTermAPar::tArgParser vArgParser;
+	vArgParser.fSetCmd(
+		"tHello",
+		[](nTermAPar::tCmd &vCmd)
+		{
+			fmt::println("HelloWorld");
+			return 0;
+		}
 	);
+	vArgParser.fParse(vArgC, vArgV);
 	return EXIT_SUCCESS;
 }
 }//namespace nConFiLan
