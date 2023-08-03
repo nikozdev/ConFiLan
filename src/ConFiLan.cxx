@@ -10,24 +10,28 @@ namespace nConFiLan
 {
 int fMain(int vArgC, char **vArgV)
 {
+	boost::filesystem::current_path(dConFiLanPathToInternal);
 	nTermAPar::tArgParser vArgParser;
 	vArgParser.fSetCmd(
 		"tHello",
 		[](nTermAPar::tCmd &vCmd)
 		{
 			fmt::println("HelloWorld");
-			return 0;
+			return 1;
 		}
 	);
 	vArgParser.fSetCmd(
 		"tFileSystem",
 		[](nTermAPar::tCmd &vCmd)
 		{
-			fmt::println("{}", boost::filesystem::current_path().c_str());
-			return 0;
+			fmt::println(
+				"RelativePath={}",
+				boost::filesystem::relative(dConFiLanPathToInternal).c_str()
+			);
+			return 1;
 		}
 	);
-  vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToResource "/exam.cfl");
+	vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToResource "/exam.cfl");
 	vArgParser.fParse(vArgC, vArgV);
 	return EXIT_SUCCESS;
 }

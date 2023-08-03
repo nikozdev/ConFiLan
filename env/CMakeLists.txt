@@ -90,11 +90,18 @@ if(oMakeLib)
     #
     set(vTestName "tHello")
     add_test(NAME ${vTestName}
-      COMMAND ${vFileDirBin}/${vProjNameExe} tHello
+      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName}
       ) # add_test
-    set(vPassRegex "HelloWorld")
-    set_tests_properties(tHello PROPERTIES
-      PASS_REGULAR_EXPRESSION ${vPassRegex}
+    set_tests_properties(${vTestName} PROPERTIES
+      PASS_REGULAR_EXPRESSION  "HelloWorld"
+      ) # set_tests_properties
+    #
+    set(vTestName "tFileSystem")
+    add_test(NAME ${vTestName}
+      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName}
+      ) # add_test
+    set_tests_properties(${vTestName} PROPERTIES
+      PASS_REGULAR_EXPRESSION "RelativePath=\."
       ) # set_tests_properties
     #
   endif(oMakeExe)
