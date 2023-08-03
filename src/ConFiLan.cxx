@@ -2,11 +2,10 @@
 #define dConFiLanCxx
 #include "ConFiLan.hxx"
 #include "dTermAPar.dir/fHead.hxx"
-#include "Boost/filesystem.hpp"
+#include "boost/filesystem.hpp"
 #include <cstddef>
 #include <cstdlib>
 #include <algorithm>
-#include <iostream>
 namespace nConFiLan
 {
 int fMain(int vArgC, char **vArgV)
@@ -28,7 +27,7 @@ int fMain(int vArgC, char **vArgV)
 			return 0;
 		}
 	);
-  vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToRes "/exam.cfl");
+  vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToResource "/exam.cfl");
 	vArgParser.fParse(vArgC, vArgV);
 	return EXIT_SUCCESS;
 }

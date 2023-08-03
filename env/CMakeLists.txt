@@ -51,7 +51,8 @@ if(oMakeLib)
   target_compile_definitions(${vProjNameLib} INTERFACE
     ${vProjNameDef}ProjName="${vProjNameUse}"
     ${vProjNameDef}ProjVnum="${vProjVnumWhole}"
-    ${vProjNameDef}PathToRes="${vFileDirRes}"
+    ${vProjNameDef}PathToInternal="${vFileDirLoc}"
+    ${vProjNameDef}PathToResource="${vFileDirRes}"
     ) # target_compile_definitions
   # set
   target_compile_definitions(${vProjNameLib} INTERFACE ${vProjNameDef}MakeLib)
