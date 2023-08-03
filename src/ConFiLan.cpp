@@ -1,6 +1,6 @@
-#ifndef dConFiLanCxx
-#define dConFiLanCxx
-#include "ConFiLan.hxx"
+#ifndef dConFiLanCpp
+#define dConFiLanCpp
+#include "ConFiLan.hpp"
 #include "dTermAPar.dir/fHead.hxx"
 #include "boost/filesystem.hpp"
 #include <cstddef>
@@ -43,4 +43,4 @@ int main(int vArgC, char **vArgV)
 	return nConFiLan::fMain(vArgC, vArgV);
 }
 #endif//dConFiLanMakeExe
-#endif//dConFiLanCxx
+#endif//dConFiLanCpp

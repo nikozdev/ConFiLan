@@ -1,6 +1,6 @@
-#ifndef dConFiLanHxx
-#define dConFiLanHxx
+#ifndef dConFiLanHpp
+#define dConFiLanHpp
 namespace nConFiLan
 {
 }//namespace nConFiLan
-#endif//dConFiLanHxx
+#endif//dConFiLanHpp
