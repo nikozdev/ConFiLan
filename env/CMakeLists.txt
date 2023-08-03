@@ -5,7 +5,6 @@ set(vProjNameLib "l${vProjNameUse}")
 set(vProjNameDll "${vProjNameLib}Shared")
 set(vProjNameSll "${vProjNameLib}Static")
 set(vProjNameExe "e${vProjNameUse}")
-set(vProjNameCon "c${vProjNameUse}")
 set(vProjNameDef "d${vProjNameUse}")
 set(vProjVnumMajor 0)
 set(vProjVnumMinor 0)
@@ -28,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(vFileDirLoc "${PROJECT_SOURCE_DIR}/..")
 set(vFileDirSrc "${vFileDirLoc}/src")
 set(vFileDirBin "${PROJECT_BINARY_DIR}")
+set(vFileDirRes "${vFileDirLoc}/res")
 # make
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(vMakeToolGnucc "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
@@ -36,16 +36,24 @@ set(vMakeToolMsvcc "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 option(oMakeLib "make project library" TRUE)
 if(oMakeLib)
   add_library(${vProjNameLib} INTERFACE)
+  # dep
   find_package(pTermAPar REQUIRED)
   target_link_libraries(${vProjNameLib} INTERFACE pTermAPar::lTermAPar)
   mark_as_advanced(FORCE pTermAPar_DIR)
   find_package(fmt REQUIRED)
   target_link_libraries(${vProjNameLib} INTERFACE fmt::fmt)
   mark_as_advanced(FORCE fmt_DIR)
+  find_package(Boost COMPONENTS filesystem REQUIRED)
+  target_link_libraries(${vProjNameLib} INTERFACE Boost::filesystem)
+  mark_as_advanced(FORCE Boost_FILESYSTEM_LIBRARY_RELEA)
+  mark_as_advanced(FORCE Boost_INCLUDE_DIR)
+  mark_as_advanced(FORCE Boost_DIR)
   target_compile_definitions(${vProjNameLib} INTERFACE
-    ${vProjNameCon}ProjName=${vProjNameUse}
-    ${vProjNameCon}ProjVnum=${vProjVnumWhole}
+    ${vProjNameDef}ProjName="${vProjNameUse}"
+    ${vProjNameDef}ProjVnum="${vProjVnumWhole}"
+    ${vProjNameDef}PathToRes="${vFileDirRes}"
     ) # target_compile_definitions
+  # set
   target_compile_definitions(${vProjNameLib} INTERFACE ${vProjNameDef}MakeLib)
   target_compile_options(${vProjNameLib} INTERFACE
     "$<${vMakeToolGnucc}:>"
