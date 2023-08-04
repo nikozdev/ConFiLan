@@ -54,7 +54,12 @@ public://setters
 public://getters
 
 	auto fGetRefer(const tIndex &rIndex) -> tRefer;
-	auto fGetValue(const tIndex &rIndex, const tValue&rValue) -> tValue;
+	auto fGetValue(const tIndex &rIndex, const tValue &rValue) -> tValue;
+
+	auto fGetTable() const -> const tTable&
+	{
+		return this->vTable;
+	}
 
 public://vetters
 
@@ -71,7 +76,7 @@ public://actions
 
 public://operats
 
-  operator tData();
+	operator tData() const;
 
 	template<typename tStream>
 	auto operator<<(tStream &rStream) -> tStream &

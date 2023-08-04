@@ -23,6 +23,45 @@
 #define fActIfNot(vExpr, ...) fActIfEqu(vExpr, 0, __VA_ARGS__);
 #define fActIfYes(vExpr, ...) fActIfEqu(vExpr, 1, __VA_ARGS__);
 //content
+namespace fmt
+{
+template<>
+struct formatter<nConFiLan::tScope>
+{
+public://actions
+
+	template<typename tContext>
+	constexpr auto parse(tContext &rCon) -> decltype(rCon.end())
+	{
+		for(auto vSym = rCon.begin(); vSym != rCon.end(); vSym++)
+		{
+		}
+		return rCon.end();
+	}
+	template<typename tContext>
+	constexpr auto format(const nConFiLan::tScope &rVal, tContext &rCon) const
+		-> decltype(rCon.out())
+	{
+		for(auto vIter: rVal.fGetTable())
+		{
+			if(auto pScope = std::get_if<nConFiLan::tScope>(vIter.second.get()))
+			{
+				fmt::format_to(rCon.out(), "[{0}]=({1})=[{0}]", vIter.first, rVal);
+			}
+			else if(auto pData = std::get_if<std::string>(vIter.second.get()))
+			{
+				fmt::format_to(rCon.out(), "[{0}]=({1})=[{0}]", vIter.first, *pData);
+			}
+			else
+			{
+				throw std::logic_error("malformed scope !");
+			}
+		}
+		return rCon.out();
+	}
+
+};//formatter<nConFiLan::tScope>
+}//namespace fmt
 namespace nConFiLan
 {
 //typedef
@@ -31,12 +70,11 @@ using tPath = boost::filesystem::path;
 auto tScope::fSetValue(const tIndex &rIndex, const tValue &rValue) -> tScope *
 {
 	this->vTable[rIndex] = std::make_shared<tValue>(rValue);
-  fmt::println("this->vTable[{}]={}", rIndex, *std::get_if<tData>(this->vTable[rIndex].get()));
 	return this;
 }
-auto tScope::fSetAlias(const tIndex &rIndex, const tIndex&rAlias) -> tScope *
+auto tScope::fSetAlias(const tIndex &rIndex, const tIndex &rAlias) -> tScope *
 {
-  fActIfNot(this->fVetIndex(rIndex), return nullptr);
+	fActIfNot(this->fVetIndex(rIndex), return nullptr);
 	this->vTable[rAlias] = tRefer(this->vTable[rIndex]);
 	return this;
 }
@@ -61,19 +99,19 @@ bool tScope::fVetIndex(const tIndex &rIndex)
 	return vEmpty;
 }
 //actions
-tScope::operator tData()
+tScope::operator tData() const
 {
 	tData vData;
 	for(auto vIter: this->vTable)
 	{
 		if(auto pScope = std::get_if<tScope>(vIter.second.get()))
 		{
-      auto vTemp = static_cast<tData>(*pScope);
+			auto vTemp = static_cast<tData>(*pScope);
 			vData += fmt::format("[{0}]=({1})=[{0}]", vIter.first, vTemp);
 		}
 		else if(auto pData = std::get_if<std::string>(vIter.second.get()))
 		{
-      auto vTemp = *pData;
+			auto vTemp = *pData;
 			vData += fmt::format("[{0}]=({1})=[{0}]", vIter.first, *pData);
 		}
 		else
@@ -85,7 +123,45 @@ tScope::operator tData()
 }
 auto tScope::fMake(const tData &rData) -> tScope *
 {
-	tScope vScope;
+	auto vScope			 = tScope();
+	auto vIndexArray = std::vector<tIndex>();
+	auto vPhead			 = decltype(rData.size()){0};
+	while(rData[vPhead])
+	{
+		switch(rData[vPhead++])
+		{
+		case '[':
+		{
+			auto vPtail = rData.find(']', vPhead);
+			fActIfNot(
+				vPhead < vPtail && vPtail != rData.npos,
+				throw std::logic_error("invalid index syntax !")
+			);
+			vIndexArray.push_back(rData.substr(vPhead, vPtail - vPhead));
+		}
+		break;
+		case '(':
+		{
+			fActIfYes(vIndexArray.empty(), throw std::logic_error("missing index"));
+			auto vPtail = rData.find(')', vPhead);
+			fActIfNot(
+				vPhead < vPtail && vPtail != rData.npos,
+				throw std::logic_error("invalid value syntax !")
+			);
+			auto vValue = rData.substr(vPhead, vPtail - vPhead);
+			auto vIndex = vIndexArray[0];
+			this->fSetValue(vIndex, vValue);
+			auto pAlias = vIndexArray.begin();
+			while(++pAlias < vIndexArray.end())
+			{
+				this->fSetAlias(vIndex, *pAlias);
+			}
+			vIndexArray.clear();
+		}
+		break;
+		default: continue;
+		}
+	}
 	return this;
 }
 template<>
@@ -141,7 +217,7 @@ int fMain(int vArgC, char **vArgV)
 				vScope.fSetAlias("index", "alias");
 				tPath vPath = vCmd.fGetOptVal("file");
 				fActIfNot(vScope.fSave(vPath), throw std::logic_error("failed save !"));
-				std::cout << vScope << std::endl;
+				fmt::println(stderr, "{0}", vScope);
 				return 1;
 			}
 		)
@@ -154,6 +230,7 @@ int fMain(int vArgC, char **vArgV)
 				tScope vScope;
 				tPath	 vPath = vCmd.fGetOptVal("file");
 				fActIfNot(vScope.fLoad(vPath), throw std::logic_error("failed load !"));
+				fmt::println(stderr, "{0}", vScope);
 				return 1;
 			}
 		)

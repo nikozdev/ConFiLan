@@ -108,7 +108,16 @@ if(oMakeLib)
     #
     set(vTestName "tFileSave")
     add_test(NAME ${vTestName}
-      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName} --file=${vFileDirRes}/save.cfl
+      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName}
+      ) # add_test
+    set_tests_properties(${vTestName} PROPERTIES
+      PASS_REGULAR_EXPRESSION "\\[index\\]=\\(value\\)=\\[index\\]"
+      REQUIRED_FILES ${vFileDirRes}/save.cfl
+      ) # set_tests_properties
+    #
+    set(vTestName "tFileLoad")
+    add_test(NAME ${vTestName}
+      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName}
       ) # add_test
     set_tests_properties(${vTestName} PROPERTIES
       PASS_REGULAR_EXPRESSION "\\[index\\]=\\(value\\)=\\[index\\]"

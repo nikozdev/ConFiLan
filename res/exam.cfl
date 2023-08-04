@@ -1,5 +1,1 @@
-[exam]=(
-  [index]=(
-    value
-  )=[index]
-)=[exam]
+[alias]=(value)=[index]
