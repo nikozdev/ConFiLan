@@ -8,19 +8,19 @@
 #include <variant>
 #include <optional>
 //defines
-#if defined(dConFiLanMakeDll)
-#if defined(dConFiLanToolMsvcc)
-#define aConFiLanExternal __declspec(dllexport)
-#define aConFiLanInternal ()
-#endif//dConFiLanToolMsvcc
-#if defined(dConFiLanToolGnucc)
-#define aConFiLanExternal __attribute__((visibility("default")))
-#define aConFiLanInternal __attribute__((visibility("hidden")))
-#endif//ifd(dConFiLanToolGnucc)
+#ifndef dConFiLanMakeDll
+#define aConFiLanExternal //
+#define aConFiLanInternal //
+#elif defined(dConFiLanToolMsvcc)
+#define aConFiLanExternal //__declspec(dllexport)
+#define aConFiLanInternal //
+#elif defined(dConFiLanToolGnucc)
+#define aConFiLanExternal //__attribute__((visibility("default")))
+#define aConFiLanInternal //__attribute__((visibility("hidden")))
 #else
-#define aConFiLanExternal
-#define aConFiLanInternal
-#endif//ifd(dConFiLanMakeDll)
+#define aConFiLanExternal //
+#define aConFiLanInternal //
+#endif//dConFiLanMakeDll
 //content
 namespace nConFiLan
 {

@@ -3,7 +3,6 @@
 //headers
 #include "ConFiLan.hpp"
 //-//external
-#include "dTermAPar.dir/fHead.hxx"
 #include "fmt/format.h"
 #include "fmt/ranges.h"
 #include "boost/filesystem.hpp"
@@ -62,6 +61,8 @@ public://actions
 
 };//formatter<nConFiLan::tScope>
 }//namespace fmt
+#ifdef dConFiLanMakeExe
+#include "dTermAPar.dir/fHead.hxx"
 namespace nConFiLan
 {
 //typedef
@@ -181,12 +182,11 @@ auto tScope::fSave<tPath>(tPath &rPath) -> tScope *
 	return this;
 }
 }//namespace nConFiLan
-#ifdef dConFiLanMakeExe
 namespace nConFiLan
 {
 int fMain(int vArgC, char **vArgV)
 {
-	boost::filesystem::current_path(dConFiLanPathToInternal);
+	boost::filesystem::current_path(dConFiLanFileData);
 	nTermAPar::tArgParser vArgParser;
 	vArgParser.fSetCmd(
 		"tHello",
@@ -202,7 +202,7 @@ int fMain(int vArgC, char **vArgV)
 		{
 			fmt::println(
 				"RelativePath={}",
-				boost::filesystem::relative(dConFiLanPathToInternal).c_str()
+				boost::filesystem::relative(dConFiLanFileRoot).c_str()
 			);
 			return 1;
 		}
@@ -221,7 +221,7 @@ int fMain(int vArgC, char **vArgV)
 				return 1;
 			}
 		)
-		->fSetOpt("file", dConFiLanPathToResource "/save.cfl");
+		->fSetOpt("file", dConFiLanFileData "/save.cfl");
 	vArgParser
 		.fSetCmd(
 			"tFileLoad",
@@ -234,7 +234,7 @@ int fMain(int vArgC, char **vArgV)
 				return 1;
 			}
 		)
-		->fSetOpt("file", dConFiLanPathToResource "/save.cfl");
+		->fSetOpt("file", dConFiLanFileData "/save.cfl");
 	try
 	{
 		vArgParser.fParse(vArgC, vArgV);
