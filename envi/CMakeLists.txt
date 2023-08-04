@@ -7,8 +7,8 @@ set(vProjNameSll "${vProjNameLib}Static")
 set(vProjNameExe "e${vProjNameUse}")
 set(vProjNameDef "d${vProjNameUse}")
 set(vProjVnumMajor 0)
-set(vProjVnumMinor 0)
-set(vProjVnumMicro 1)
+set(vProjVnumMinor 1)
+set(vProjVnumMicro 0)
 set(vProjVnumWhole "${vProjVnumMajor}.${vProjVnumMinor}.${vProjVnumMicro}")
 project(${vProjNameUse}
   VERSION ${vProjVnumWhole}
