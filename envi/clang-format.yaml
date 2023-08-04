@@ -3,11 +3,11 @@ Standard: Latest
 BasedOnStyle: InheritParentConfig
 DisableFormat: false
 ColumnLimit: 80
-IndentWidth:                       4
+IndentWidth:                       2
 PPIndentWidth:                    -1 # for -1 - use IndentWidth
-ContinuationIndentWidth:           4
-ConstructorInitializerIndentWidth: 4
-AccessModifierOffset: -4
+ContinuationIndentWidth:           2
+ConstructorInitializerIndentWidth: 2
+AccessModifierOffset: -2
 AlignAfterOpenBracket:  BlockIndent
 AlignArrayOfStructures: Left
 AlignEscapedNewlines:   Left
@@ -81,7 +81,7 @@ IncludeCategories: # priority is INT_MAX by defualt, to go into the end
     CaseSensitive: false
 SortIncludes:      Never
 UseTab:   Always # indent with /t to make TabWidth easily changable
-TabWidth: 4      # '\t'==' '*n
+TabWidth: 2      # '\t'==' '*n
 IndentAccessModifiers:      false
 IndentCaseBlocks:           false
 IndentCaseLabels:           false
@@ -169,14 +169,6 @@ AttributeMacros:
   - __capability
   - __output
   - __unused
-  - aDepreaction
-  - aUseReturned
-  - aNotReturned
-  - aNotReturned
-  - aMaybeUnused
-  - aSetDeclspec
-  - aDllExported
-  - aDllImported
 StatementAttributeLikeMacros: 
   - Q_EMIT
 ForEachMacros:
@@ -195,33 +187,3 @@ WhitespaceSensitiveMacros:
 TypenameMacros:
   - STACK_OF
   - LIST
-  - dFuncDecIline
-  - dFuncDecIline
-  - dFuncDecConst
-  - dFuncDecExter
-  - dFuncDecInter
-  - dFuncDefIline
-  - dFuncDefIline
-  - dFuncDefConst
-  - dFuncDefExter
-  - dFuncDefInter
-  - dDataDecIline
-  - dDataDecIline
-  - dDataDecConst
-  - dDataDecExter
-  - dDataDecInter
-  - dDataDefIline
-  - dDataDefIline
-  - dDataDefConst
-  - dDataDefExter
-  - dDataDefInter
-  - dTypeDecIline
-  - dTypeDecIline
-  - dTypeDecConst
-  - dTypeDecExter
-  - dTypeDecInter
-  - dTypeDefIline
-  - dTypeDefIline
-  - dTypeDefConst
-  - dTypeDefExter
-  - dTypeDefInter

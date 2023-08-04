@@ -6,7 +6,7 @@
 ## configuration file format
 - the entire file consists of index-value associations
 - tabulations, spaces do not matter
-> only numbers, strings, squared and rounded braces
+> only strings, squared and rounded braces
 - there can be multiple scope levels
 > the global scope is the file
 > > having the file path as it's own string index
@@ -25,16 +25,12 @@
 > value=\[index\]
 > can also be written after any other index to make an alias
 > > \(value\)=\[index\]=\[alias\]
-- can be a number
-> if this is only a number inside of squared brackets: \[42\]
-- can be a string
-> if this is a double quoted string inside of squared brackets: \["c"\]
+- this can only be a string
 ### value
-- written in rounded brackets like \(this\)
+- written without any brackets like this: \[index\]=value=\[alias\]
 - associated with an index or multiple aliases
-- can be a scope
-> then it can contain it's own index-value pairs
-> \[index\]=\(\[i\]=\[v\]=\[i\]\)=\[index\]
+- can be a string or a scope
 ### scope
-- value having other values in it
-> \[index\]=\(\[index\]=\(value\)=\[alias\]\)=\[alias\]
+- written in rounded brackets like \(this\)
+- value having index-value pairs
+> \[index\]=\(\[index\]=value=\[alias\]\)=\[alias\]
