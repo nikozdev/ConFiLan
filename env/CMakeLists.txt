@@ -24,7 +24,7 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # file
-set(vFileDirLoc "${PROJECT_SOURCE_DIR}/..")
+set(vFileDirLoc "$<PATH:ABSOLUTE_PATH,NORMALIZE,..,${PROJECT_SOURCE_DIR}>")
 set(vFileDirSrc "${vFileDirLoc}/src")
 set(vFileDirBin "${PROJECT_BINARY_DIR}")
 set(vFileDirRes "${vFileDirLoc}/res")
@@ -53,6 +53,8 @@ if(oMakeLib)
     ${vProjNameDef}ProjVnum="${vProjVnumWhole}"
     ${vProjNameDef}PathToInternal="${vFileDirLoc}"
     ${vProjNameDef}PathToResource="${vFileDirRes}"
+    "$<${vMakeToolGnucc}:${vProjNameDef}ToolGnucc"
+    "$<${vMakeToolMsvcc}:${vProjNameDef}ToolMsvcc"
     ) # target_compile_definitions
   # set
   target_compile_definitions(${vProjNameLib} INTERFACE ${vProjNameDef}MakeLib)
@@ -101,7 +103,7 @@ if(oMakeLib)
       COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName}
       ) # add_test
     set_tests_properties(${vTestName} PROPERTIES
-      PASS_REGULAR_EXPRESSION "RelativePath=\."
+      PASS_REGULAR_EXPRESSION "RelativePath=."
       ) # set_tests_properties
     #
   endif(oMakeExe)
