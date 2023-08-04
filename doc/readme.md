@@ -27,12 +27,10 @@
 > > \(value\)=\[index\]=\[alias\]
 - this can only be a string
 ### value
-- written in rounded brackets like \(this\)
+- written without any brackets like this: \[index\]=value=\[alias\]
 - associated with an index or multiple aliases
-- can be a scope
-> then it can contain it's own index-value pairs
-> \[index\]=\(\[i\]=\[v\]=\[i\]\)=\[index\]
-- this can be just a string
+- can be a string or a scope
 ### scope
-- value having other values in it
-> \[index\]=\(\[index\]=\(value\)=\[alias\]\)=\[alias\]
+- written in rounded brackets like \(this\)
+- value having index-value pairs
+> \[index\]=\(\[index\]=value=\[alias\]\)=\[alias\]
