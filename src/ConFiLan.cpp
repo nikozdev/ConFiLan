@@ -4,6 +4,8 @@
 #include "ConFiLan.hpp"
 //-//external
 #include "dTermAPar.dir/fHead.hxx"
+#include "fmt/format.h"
+#include "fmt/ranges.h"
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
 //-//standard
@@ -26,72 +28,81 @@ namespace nConFiLan
 //typedef
 using tPath = boost::filesystem::path;
 //setters
-auto tScope::fSet(const tIndex &rIndex, const tValue &rValue) -> tScope *
+auto tScope::fSetValue(const tIndex &rIndex, const tValue &rValue) -> tScope *
 {
 	this->vTable[rIndex] = std::make_shared<tValue>(rValue);
+  fmt::println("this->vTable[{}]={}", rIndex, *std::get_if<tData>(this->vTable[rIndex].get()));
 	return this;
 }
-auto tScope::fSet(const tIndex &rAlias, const tIndex &rIndex) -> tScope *
+auto tScope::fSetAlias(const tIndex &rIndex, const tIndex&rAlias) -> tScope *
 {
-	this->vTable[rAlias] = this->vTable[rIndex];
+  fActIfNot(this->fVetIndex(rIndex), return nullptr);
+	this->vTable[rAlias] = tRefer(this->vTable[rIndex]);
 	return this;
 }
 //getters
-auto tScope::fGet(const tIndex &rIndex) const -> std::optional<tRefer>
+auto tScope::fGetRefer(const tIndex &rIndex) -> tRefer
 {
 	auto vFound = this->vTable.find(rIndex);
 	auto vEmpty = vFound == this->vTable.end();
-	return vEmpty ? std::optional<tRefer>() : vFound->second;
+	return vEmpty ? tRefer{} : vFound->second;
+}
+auto tScope::fGetValue(const tIndex &rIndex, const tValue &rValue) -> tValue
+{
+	auto vRefer = fGetRefer(rIndex);
+	auto vValue = vRefer ? *vRefer : rValue;
+	return vValue;
 }
 //vetters
-bool tScope::fVet(const tIndex &rIndex)
+bool tScope::fVetIndex(const tIndex &rIndex)
 {
 	auto vFound = this->vTable.find(rIndex);
 	auto vEmpty = vFound == this->vTable.end();
 	return vEmpty;
 }
 //actions
+tScope::operator tData()
+{
+	tData vData;
+	for(auto vIter: this->vTable)
+	{
+		if(auto pScope = std::get_if<tScope>(vIter.second.get()))
+		{
+      auto vTemp = static_cast<tData>(*pScope);
+			vData += fmt::format("[{0}]=({1})=[{0}]", vIter.first, vTemp);
+		}
+		else if(auto pData = std::get_if<std::string>(vIter.second.get()))
+		{
+      auto vTemp = *pData;
+			vData += fmt::format("[{0}]=({1})=[{0}]", vIter.first, *pData);
+		}
+		else
+		{
+			throw std::logic_error("malformed scope !");
+		}
+	}
+	return vData;
+}
 auto tScope::fMake(const tData &rData) -> tScope *
 {
+	tScope vScope;
 	return this;
 }
 template<>
-auto tScope::fLoad<tPath>(const tPath &rPath) -> tScope *
+auto tScope::fLoad<tPath>(tPath &rPath) -> tScope *
 {
-	//file
 	auto vFile = boost::filesystem::ifstream(rPath);
 	fActIfNot(vFile.is_open(), throw std::logic_error(rPath.c_str()));
-	//size
-	vFile.seekg(0, std::ios::end);
-	auto vSize = tSize(vFile.tellg());
-	vFile.seekg(0, std::ios::beg);
-	//data
-	auto vData = tData(vSize, '\0');
-	while(vFile >> vData)
-	{
-	}
-	//quit
-	return this->fMake(vData);
-}
-template<>
-auto tScope::fSave<tPath>(const tPath &rPath) -> tScope *
-{
-	//file
-	auto vFile = boost::filesystem::ofstream(rPath);
-	fActIfNot(vFile.is_open(), throw std::logic_error(rPath.c_str()));
-	//quit
+	vFile >> *this;
 	return this;
 }
-//operats
 template<>
-auto tScope::operator<<(std::ostream &rStream) -> std::ostream &
+auto tScope::fSave<tPath>(tPath &rPath) -> tScope *
 {
-	return rStream;
-}
-template<>
-auto tScope::operator>>(std::istream &rStream) -> std::istream &
-{
-	return rStream;
+	auto vFile = boost::filesystem::ofstream(rPath);
+	fActIfNot(vFile.is_open(), throw std::logic_error(rPath.c_str()));
+	vFile << *this;
+	return this;
 }
 }//namespace nConFiLan
 #ifdef dConFiLanMakeExe
@@ -99,7 +110,6 @@ namespace nConFiLan
 {
 int fMain(int vArgC, char **vArgV)
 {
-	boost::filesystem::ifstream v;
 	boost::filesystem::current_path(dConFiLanPathToInternal);
 	nTermAPar::tArgParser vArgParser;
 	vArgParser.fSetCmd(
@@ -121,8 +131,42 @@ int fMain(int vArgC, char **vArgV)
 			return 1;
 		}
 	);
-	vArgParser.fSetOpt("f fp file filepath", dConFiLanPathToResource "/exam.cfl");
-	vArgParser.fParse(vArgC, vArgV);
+	vArgParser
+		.fSetCmd(
+			"tFileSave",
+			[](nTermAPar::tCmd &vCmd)
+			{
+				tScope vScope;
+				vScope.fSetValue("index", "value");
+				vScope.fSetAlias("index", "alias");
+				tPath vPath = vCmd.fGetOptVal("file");
+				fActIfNot(vScope.fSave(vPath), throw std::logic_error("failed save !"));
+				std::cout << vScope << std::endl;
+				return 1;
+			}
+		)
+		->fSetOpt("file", dConFiLanPathToResource "/save.cfl");
+	vArgParser
+		.fSetCmd(
+			"tFileLoad",
+			[](nTermAPar::tCmd &vCmd)
+			{
+				tScope vScope;
+				tPath	 vPath = vCmd.fGetOptVal("file");
+				fActIfNot(vScope.fLoad(vPath), throw std::logic_error("failed load !"));
+				return 1;
+			}
+		)
+		->fSetOpt("file", dConFiLanPathToResource "/save.cfl");
+	try
+	{
+		vArgParser.fParse(vArgC, vArgV);
+	}
+	catch(const std::exception &vError)
+	{
+		fmt::println(stderr, "[exception]={}", vError.what());
+		return EXIT_FAILURE;
+	}
 	return EXIT_SUCCESS;
 }
 }//namespace nConFiLan

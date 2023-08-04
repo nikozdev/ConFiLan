@@ -24,7 +24,7 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # file
-set(vFileDirLoc "$<PATH:ABSOLUTE_PATH,NORMALIZE,..,${PROJECT_SOURCE_DIR}>")
+set(vFileDirLoc "${PROJECT_SOURCE_DIR}/..")
 set(vFileDirSrc "${vFileDirLoc}/src")
 set(vFileDirBin "${PROJECT_BINARY_DIR}")
 set(vFileDirRes "${vFileDirLoc}/res")
@@ -104,6 +104,15 @@ if(oMakeLib)
       ) # add_test
     set_tests_properties(${vTestName} PROPERTIES
       PASS_REGULAR_EXPRESSION "RelativePath=."
+      ) # set_tests_properties
+    #
+    set(vTestName "tFileSave")
+    add_test(NAME ${vTestName}
+      COMMAND ${vFileDirBin}/${vProjNameExe} ${vTestName} --file=${vFileDirRes}/save.cfl
+      ) # add_test
+    set_tests_properties(${vTestName} PROPERTIES
+      PASS_REGULAR_EXPRESSION "\\[index\\]=\\(value\\)=\\[index\\]"
+      REQUIRED_FILES ${vFileDirRes}/save.cfl
       ) # set_tests_properties
     #
   endif(oMakeExe)

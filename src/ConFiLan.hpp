@@ -2,6 +2,7 @@
 #define dConFiLanHpp
 //headers
 #include <string>
+#include <iostream>
 #include <memory>
 #include <map>
 #include <variant>
@@ -47,32 +48,51 @@ public://codetor
 
 public://setters
 
-	auto fSet(const tIndex &rAlias, const tIndex &rIndex) -> tScope *;
-	auto fSet(const tIndex &rIndex, const tValue &rValue) -> tScope *;
+	auto fSetValue(const tIndex &rIndex, const tValue &rValue) -> tScope *;
+	auto fSetAlias(const tIndex &rIndex, const tIndex &rAlias) -> tScope *;
 
 public://getters
 
-	auto fGet(const tIndex &rIndex) const -> std::optional<tRefer>;
+	auto fGetRefer(const tIndex &rIndex) -> tRefer;
+	auto fGetValue(const tIndex &rIndex, const tValue&rValue) -> tValue;
 
 public://vetters
 
-	auto fVet(const tIndex &rIndex) -> bool;
+	auto fVetIndex(const tIndex &rIndex) -> bool;
 
 public://actions
 
 	auto fMake(const tData &rData) -> tScope *;
 
 	template<typename tPath>
-	auto fSave(const tPath &rPath) -> tScope *;
+	auto fSave(tPath &rPath) -> tScope *;
 	template<typename tPath>
-	auto fLoad(const tPath &rPath) -> tScope *;
+	auto fLoad(tPath &rPath) -> tScope *;
 
 public://operats
 
+  operator tData();
+
 	template<typename tStream>
-	auto operator<<(tStream &rStream) -> tStream &;
+	auto operator<<(tStream &rStream) -> tStream &
+	{
+		rStream << static_cast<tData>(*this);
+		return rStream;
+	}
 	template<typename tStream>
-	auto operator>>(tStream &rStream) -> tStream &;
+	auto operator>>(tStream &rStream) -> tStream &
+	{
+		auto vFrom = rStream.tellg();
+		rStream.seekg(0, std::ios::end);
+		auto vSize = tSize(rStream.tellg());
+		rStream.seekg(vFrom, std::ios::beg);
+		auto vData = tData(vSize, '\0');
+		while(rStream >> vData)
+		{
+		}
+		this->fMake(vData);
+		return rStream;
+	}
 
 private://datadef
 
@@ -81,12 +101,12 @@ private://datadef
 
 };//tScope
 template<typename tStream>
-auto operator<<(tStream &rStream, tScope &rScope)
+auto operator<<(tStream &rStream, tScope &rScope) -> tStream &
 {
 	return rScope.operator<<(rStream);
 }
 template<typename tStream>
-auto operator>>(tStream &rStream, tScope &rScope)
+auto operator>>(tStream &rStream, tScope &rScope) -> tStream &
 {
 	return rScope.operator>>(rStream);
 }
