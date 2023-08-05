@@ -23,6 +23,10 @@ mark_as_advanced(FORCE CMAKE_OSX_SYSROOT)
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+# tool
+set(vToolGnuccFlag "$<COMPILE_LANG_AND_ID:CXX,GNU,LCC>")
+set(vToolClangFlag "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang>")
+set(vToolMsvccFlag "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 # file
 set(vFileDirMainRoot "${PROJECT_SOURCE_DIR}/..")
 set(vFileDirMainCode "${vFileDirMainRoot}/code")
@@ -38,8 +42,6 @@ set(CMAKE_PREFIX_PATH "${vFileDirDestRoot}" CACHE PATH "destination prefix" FORC
 set(CMAKE_INSTALL_PREFIX "" CACHE PATH "install prefix" FORCE)
 # make
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(vMakeToolGnucc "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
-set(vMakeToolMsvcc "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 ##lib
 option(oMakeLib "make project library" TRUE)
 if(oMakeLib)
@@ -53,19 +55,21 @@ if(oMakeLib)
   mark_as_advanced(FORCE Boost_FILESYSTEM_LIBRARY_RELEA)
   mark_as_advanced(FORCE Boost_INCLUDE_DIR)
   mark_as_advanced(FORCE Boost_DIR)
+  # set
   target_compile_definitions(${vProjNameLib} INTERFACE
     ${vProjNameDef}ProjName="${vProjNameUse}"
     ${vProjNameDef}ProjVnum="${vProjVnumWhole}"
     ${vProjNameDef}FileRoot="${vFileDirMainRoot}"
     ${vProjNameDef}FileData="${vFileDirMainData}"
-    "$<${vMakeToolGnucc}:${vProjNameDef}ToolGnucc"
-    "$<${vMakeToolMsvcc}:${vProjNameDef}ToolMsvcc"
+    "$<${vToolGnuccFlag}:${vProjNameDef}ToolGnuccFlag=0b001>"
+    "$<${vToolClangFlag}:${vProjNameDef}ToolClangFlag=0b011>"
+    "$<${vToolMsvccFlag}:${vProjNameDef}ToolMsvccFlag=0b100>"
     ) # target_compile_definitions
-  # set
   target_compile_definitions(${vProjNameLib} INTERFACE ${vProjNameDef}MakeLib)
   target_compile_options(${vProjNameLib} INTERFACE
-    "$<${vMakeToolGnucc}:>"
-    "$<${vMakeToolMsvcc}:>"
+    "$<${vToolGnuccFlag}:>"
+    "$<${vToolClangFlag}:>"
+    "$<${vToolMsvccFlag}:>"
     ) # target_compile_options
   target_include_directories(${vProjNameLib} INTERFACE
     "$<BUILD_INTERFACE:${vFileDirMainCode}>;"
